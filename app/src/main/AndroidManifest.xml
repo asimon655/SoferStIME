@@ -8,6 +8,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SoferStIME" />
+        android:theme="@style/Theme.SoferStIME">
+
+        <!-- Declares the input method service -->
+        <service
+            android:name=".SoferStIME"
+            android:exported="false"
+            android:label="@string/sofer_stime_lable"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+    </application>
 
 </manifest>

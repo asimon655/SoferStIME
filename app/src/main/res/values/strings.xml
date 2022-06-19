@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Sofer StIME</string>
+    <string name="sofer_stime_lable">a physical keyboard</string>
 </resources>
