@@ -3,10 +3,15 @@ package com.asimon.soferstime
 import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 
 class SoferStIME : InputMethodService() {
     private val keyEventProcessor = KeyEventProcessor(this)
+    private val view = lazy {
+        WordListView(this.applicationContext)
+    }
+
 
     override fun onCreate() {
         Log.d("soferStime", "starting...")
@@ -32,6 +37,7 @@ class SoferStIME : InputMethodService() {
             return true
         }
         if (keyEventProcessor.onKeyUp(keyCode, event)) {
+            updateInputViewShown()
             return true
         }
         // what wasn't handled go to default
@@ -40,6 +46,7 @@ class SoferStIME : InputMethodService() {
 
     override fun onStartInput(editorInfo: EditorInfo, restarting: Boolean) {
         keyEventProcessor.updateStatusIcon()
+        keyEventProcessor.reset()
         Log.d(
             "soferStime",
             """
@@ -49,5 +56,29 @@ class SoferStIME : InputMethodService() {
             """.trimIndent()
         )
         Log.d("soferStime", "action label : " + editorInfo.actionLabel)
+    }
+
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+    }
+
+    override fun onEvaluateInputViewShown(): Boolean {
+        super.onEvaluateInputViewShown()
+        return KeyboardSettings.t9
+    }
+
+    override fun onCreateInputView(): View {
+        return view.value
+    }
+
+    fun previousWord() {
+        view.value.previousWord()
+    }
+
+    fun updateViewWordList(wordList: List<String>?) {
+        view.value.updateWordList(wordList)
+    }
+    fun nextWord() {
+        view.value.nextWord()
     }
 }

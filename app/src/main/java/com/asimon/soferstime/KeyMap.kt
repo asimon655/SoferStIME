@@ -2,61 +2,71 @@ package com.asimon.soferstime
 
 import android.view.KeyEvent
 import java.util.*
-import kotlin.collections.HashMap
 
 object KeyMap {
-    val enMap = HashMap<Int, List<Char>>()
-    val heMap = HashMap<Int, List<Char>>()
-    val numbersMap = HashMap<Int, Char>()
+    val enMap = mapOf(
+        KeyEvent.KEYCODE_0 to listOf(' ', '0'),
+        KeyEvent.KEYCODE_1 to listOf('.', ',', '\'', '"', '1'),
+        KeyEvent.KEYCODE_2 to listOf('a', 'b', 'c', '2'),
+        KeyEvent.KEYCODE_3 to listOf('d', 'e', 'f', '3'),
+        KeyEvent.KEYCODE_4 to listOf('g', 'h', 'i', '4'),
+        KeyEvent.KEYCODE_5 to listOf('j', 'k', 'l', '5'),
+        KeyEvent.KEYCODE_6 to listOf('m', 'n', 'o', '6'),
+        KeyEvent.KEYCODE_7 to listOf('p', 'q', 'r', 's', '7'),
+        KeyEvent.KEYCODE_8 to listOf('t', 'u', 'v', '8'),
+        KeyEvent.KEYCODE_9 to listOf('w', 'x', 'y', 'z', '9')
+    )
+    val heMap = mapOf(
+        KeyEvent.KEYCODE_0 to listOf(' ', '0'),
+        KeyEvent.KEYCODE_1 to listOf('.', ',', '?', '"', '\'', '!', '@', '1'),
+        KeyEvent.KEYCODE_2 to listOf('ד', 'ה', 'ו', '2'),
+        KeyEvent.KEYCODE_3 to listOf('א', 'ב', 'ג', '3'),
+        KeyEvent.KEYCODE_4 to listOf('מ', 'ם', 'נ', 'ן', '4'),
+        KeyEvent.KEYCODE_5 to listOf('י', 'כ', 'ך', 'ל', '5'),
+        KeyEvent.KEYCODE_6 to listOf('ז', 'ח', 'ט', '6'),
+        KeyEvent.KEYCODE_7 to listOf('ר', 'ש', 'ת', '7'),
+        KeyEvent.KEYCODE_8 to listOf('צ', 'ץ', 'ק', '8'),
+        KeyEvent.KEYCODE_9 to listOf('ס', 'ע', 'פ', 'ף', '9')
+    )
+    val numbersMap = mapOf(
+        KeyEvent.KEYCODE_0 to '0',
+        KeyEvent.KEYCODE_1 to '1',
+        KeyEvent.KEYCODE_2 to '2',
+        KeyEvent.KEYCODE_3 to '3',
+        KeyEvent.KEYCODE_4 to '4',
+        KeyEvent.KEYCODE_5 to '5',
+        KeyEvent.KEYCODE_6 to '6',
+        KeyEvent.KEYCODE_7 to '7',
+        KeyEvent.KEYCODE_8 to '8',
+        KeyEvent.KEYCODE_9 to '9'
+    )
 
-    private val langMap = HashMap<String, Map<Int, List<Char>>>()
+    private val langMap = mapOf(
+        "en" to enMap,
+        "he" to heMap
+    )
+
+    private val reversedKeyMapEn: Map<Char, Int>
+    private val reversedKeyMapHe: Map<Char, Int>
+
+    private val reversedLangMap: Map<String, Map<Char, Int>>
 
     init {
-        langMap.run {
-            put("en", enMap)
-            put("he", heMap)
-        }
+        reversedKeyMapEn = reverseKeyMap(enMap)
+        reversedKeyMapHe = reverseKeyMap(heMap)
 
-        enMap.run {
-            put(KeyEvent.KEYCODE_0, listOf(' ', '0'))
-            put(KeyEvent.KEYCODE_1, listOf('.', ',', '\'', '"', '1'))
-            put(KeyEvent.KEYCODE_2, listOf('a', 'b', 'c', '2'))
-            put(KeyEvent.KEYCODE_3, listOf('d', 'e', 'f', '3'))
-            put(KeyEvent.KEYCODE_4, listOf('g', 'h', 'i', '4'))
-            put(KeyEvent.KEYCODE_5, listOf('j', 'k', 'l', '5'))
-            put(KeyEvent.KEYCODE_6, listOf('m', 'n', 'o', '6'))
-            put(KeyEvent.KEYCODE_7, listOf('p', 'q', 'r', 's', '7'))
-            put(KeyEvent.KEYCODE_8, listOf('t', 'u', 'v', '8'))
-            put(KeyEvent.KEYCODE_9, listOf('w', 'x', 'y', 'z', '9'))
-        }
-        heMap.run {
-            put(KeyEvent.KEYCODE_0, listOf(' ', '0'))
-            put(KeyEvent.KEYCODE_1, listOf('.', ',', '?', '"', '\'', '!', '@', '1'))
-            put(KeyEvent.KEYCODE_2, listOf('ד', 'ה', 'ו', '2'))
-            put(KeyEvent.KEYCODE_3, listOf('א', 'ב', 'ג', '3'))
-            put(KeyEvent.KEYCODE_4, listOf('מ', 'ם', 'נ', 'ן', '4'))
-            put(KeyEvent.KEYCODE_5, listOf('י', 'כ', 'ך', 'ל', '5'))
-            put(KeyEvent.KEYCODE_6, listOf('ז', 'ח', 'ט', '6'))
-            put(KeyEvent.KEYCODE_7, listOf('ר', 'ש', 'ת', '7'))
-            put(KeyEvent.KEYCODE_8, listOf('צ', 'ץ', 'ק', '8'))
-            put(KeyEvent.KEYCODE_9, listOf('ס', 'ע', 'פ', 'ף', '9'))
-        }
-        numbersMap.run {
-            put(KeyEvent.KEYCODE_0, '0')
-            put(KeyEvent.KEYCODE_1, '1')
-            put(KeyEvent.KEYCODE_2, '2')
-            put(KeyEvent.KEYCODE_3, '3')
-            put(KeyEvent.KEYCODE_4, '4')
-            put(KeyEvent.KEYCODE_5, '5')
-            put(KeyEvent.KEYCODE_6, '6')
-            put(KeyEvent.KEYCODE_7, '7')
-            put(KeyEvent.KEYCODE_8, '8')
-            put(KeyEvent.KEYCODE_9, '9')
-        }
+        reversedLangMap = mapOf(
+            "en" to reversedKeyMapEn,
+            "he" to reversedKeyMapHe
+        )
     }
 
     private fun getCurrentLangMap() : Map<Int, List<Char>> {
         return langMap[KeyboardSettings.getCurrentLanguage()]!!
+    }
+
+    private fun getCurrentReversedLangMap() : Map<Char, Int> {
+        return reversedLangMap[KeyboardSettings.getCurrentLanguage()]!!
     }
 
     /**
@@ -77,7 +87,38 @@ object KeyMap {
      * @return mapped character or null if not found
      */
     fun getNumber(keyCode: Int): Char? {
-        val characters: List<Char> = getCurrentLangMap()[keyCode] ?: return null
-        return characters[characters.size - 1]
+        return numbersMap[keyCode]
+    }
+
+    fun calcHash(word: String?): String {
+        var word = word
+        word = word!!.lowercase(Locale.forLanguageTag(KeyboardSettings.getCurrentLanguage()))
+        val hash = word.toCharArray()
+        for (i in hash.indices) {
+            hash[i] = numbersMap[getCurrentReversedLangMap()[hash[i]]]!!
+                .toChar()
+        }
+        return String(hash)
+    }
+
+    fun calcHash(word: String?, language: String): String {
+        var word = word
+        word = word!!.lowercase(Locale.forLanguageTag(KeyboardSettings.getCurrentLanguage()))
+        val hash = word.toCharArray()
+        for (i in hash.indices) {
+            hash[i] = numbersMap[reversedLangMap[language]!![hash[i]]]!!
+                .toChar()
+        }
+        return String(hash)
+    }
+
+    private fun reverseKeyMap(keyMap: Map<Int, List<Char>>): Map<Char, Int> {
+        val reversedKeyMap: MutableMap<Char, Int> = HashMap()
+        for (key in keyMap.keys) {
+            for (character in keyMap[key]!!) {
+                reversedKeyMap[character] = key
+            }
+        }
+        return reversedKeyMap
     }
 }

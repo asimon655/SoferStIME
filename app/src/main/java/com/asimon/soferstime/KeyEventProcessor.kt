@@ -1,11 +1,14 @@
 package com.asimon.soferstime
 
+import android.content.ComponentName
 import android.content.Intent
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import java.lang.Exception
+
 
 class KeyEventProcessor(private val IME: SoferStIME) {
-    private val textComposer = TextComposer(IME);
+    private val textComposer = TextComposer(IME)
 
     /**
      * process the onKeyDown event and decide whether to intercept (and catch at onKeyUp)
@@ -31,6 +34,7 @@ class KeyEventProcessor(private val IME: SoferStIME) {
                 event.startTracking()
                 return true
             }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true
             //spacial handle for the pound key
             if (keyCode == KeyEvent.KEYCODE_POUND) {
                 event.startTracking()
@@ -79,7 +83,9 @@ class KeyEventProcessor(private val IME: SoferStIME) {
             //spacial handle for the center key
             if (keyCode == KeyEvent.KEYCODE_POUND) {
                 KeyboardSettings.toggleT9()
+                textComposer.reset()
                 updateStatusIcon()
+                IME.updateInputViewShown()
                 return true
             }
             // handle character typing
@@ -133,6 +139,8 @@ class KeyEventProcessor(private val IME: SoferStIME) {
             }
             //spacial handle for the center key
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                if (textComposer.selectWord())
+                    return true
                 performEnterAction()
                 return true
             }
@@ -141,9 +149,18 @@ class KeyEventProcessor(private val IME: SoferStIME) {
                 textComposer.nextWord()
                 return true
             }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                textComposer.nextWord()
+                return true
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                textComposer.previousWord()
+                return true
+            }
             //spacial handle for the center key
             if (keyCode == KeyEvent.KEYCODE_POUND) {
                 KeyboardSettings.nextLang()
+                textComposer.reset()
                 updateStatusIcon()
                 return true
             }
@@ -164,6 +181,9 @@ class KeyEventProcessor(private val IME: SoferStIME) {
         return false
     }
 
+    fun reset() {
+        textComposer.reset()
+    }
 
     private fun handleBackKey() {
         val currentInputConnection = IME.currentInputConnection
@@ -175,6 +195,10 @@ class KeyEventProcessor(private val IME: SoferStIME) {
         // check if there is some text
         var text = currentInputConnection.getTextBeforeCursor(1, 0)
         if (text != null && text.isNotEmpty()) {
+            textComposer.delete()
+            return
+        }
+        if (!textComposer.isT9Empty()) {
             textComposer.delete()
             return
         }
@@ -212,6 +236,26 @@ class KeyEventProcessor(private val IME: SoferStIME) {
         }
         else {
             IME.hideStatusIcon()
+        }
+    }
+
+    /**
+     * tries to open the speech recognition settings
+     * in case of fail returns false
+     */
+    private fun openSpeechRecognitionSettings(): Boolean {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val component = ComponentName(
+                "com.google.android.googlequicksearchbox",
+                "com.google.android.apps.gsa.settingsui.VoiceSearchPreferences")
+        intent.component = component
+        try {
+            IME.startActivity(intent)
+            return true
+        }
+        catch (e: Exception) {
+            return false
         }
     }
 }

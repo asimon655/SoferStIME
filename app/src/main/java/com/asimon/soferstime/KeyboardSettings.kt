@@ -1,24 +1,25 @@
 package com.asimon.soferstime
 
-import java.util.*
-
 object KeyboardSettings {
     var t9 = false
     val languages = listOf("he", "en")
     var currentLanguageIndex = 0
-    val icons = HashMap<String, Int>()
-    val iconsT9 = HashMap<String, Int>()
-
-    init {
-        icons.run {
-            put("he", R.drawable.he_ab_icon)
-            put("en", R.drawable.en_ab_icon)
-        }
-        iconsT9.run {
-            put("he", R.drawable.he_ab_t9_icon)
-            put("en", R.drawable.en_ab_t9_icon)
-        }
-    }
+    val icons = mapOf(
+        "he" to R.drawable.he_ab_icon,
+        "en" to R.drawable.en_ab_icon
+    )
+    val iconsT9 = mapOf(
+        "he" to R.drawable.he_ab_t9_icon,
+        "en" to R.drawable.en_ab_t9_icon
+    )
+    val dictionary = mapOf(
+        "he" to R.raw.he_utf8,
+        "en" to R.raw.en_utf8
+    )
+    val directions = mapOf(
+        "he" to "rtl",
+        "en" to "ltr"
+    )
 
     fun getCurrentIcon() : Int {
         val currentLanguage = getCurrentLanguage()
@@ -31,6 +32,10 @@ object KeyboardSettings {
 
     fun getCurrentLanguage() : String {
         return languages[currentLanguageIndex]
+    }
+
+    fun getCurrentDirection() : String {
+        return directions[getCurrentLanguage()] ?: "ltr"
     }
 
     fun toggleT9() {
